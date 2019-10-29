@@ -38,13 +38,8 @@ public class Main {
         }
 
         public static int getPosition(String word, int indicator) {
-        String temp = Character.toString(word.charAt(0));
-        int index = dict.get(indicator).indexOf(temp);
 
-        if (index < 0){
-            index = 0;}
-
-        for(int j = index; j < dict.get(indicator).size(); j++) {
+        for(int j = 0; j < dict.get(indicator).size(); j++) {
             String word_2 = (String) dict.get(indicator).get(j);
             if (word.compareTo(word_2) < 0){
                 return j;
@@ -66,16 +61,16 @@ public class Main {
             Scanner sc = new Scanner(file);
             while (sc.hasNextLine()) {
 
-                String i = sc.nextLine().toLowerCase();
+                String word = sc.nextLine().toLowerCase();
+                int indicator = alphabet.indexOf(word.charAt(0));
 
-                int indicator = alphabet.indexOf(i.charAt(0));
+                int position = getPosition(word, indicator);
 
-                int position = getPosition(i, indicator);
                 if(position != -1) {
-                    dict.get(indicator).add(position, i);
+                    dict.get(indicator).add(position, word);
                 }
                 else {
-                    dict.get(indicator).add(i);
+                    dict.get(indicator).add(word); // A MATHEUS LE GUSTAN LOS PENES
                 }
             }
             sc.close();
