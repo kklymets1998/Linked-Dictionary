@@ -1,13 +1,12 @@
 package com.company;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Main {
     static String alphabet = "abcdefghijklmnopqrstuvwxyzé";
-    static String path = "/Users/Matheus/Linked/src/com/company/unsortedDictTest.txt";
+    static String path = "C:\\Users\\Matheus\\IdeaProjects\\Linked-Dictionary\\src\\com\\company\\unsorteddict.txt";
+    static String path_sorted = "C:\\Users\\Matheus\\IdeaProjects\\Linked-Dictionary\\src\\com\\company\\sortedDictTest.txt";
     static LinkedList<LinkedList> dict = new LinkedList<>();
     static String[] toPrint = new String[99171];
 
@@ -18,16 +17,16 @@ public class Main {
                                                                                 long startingTime = System.currentTimeMillis();
         createLinkedLists();
                                                                                 long elapsedTime = (System.currentTimeMillis() - startingTime);
-                                                                                System.out.println("Time to create Linked Lists: " + elapsedTime);
+                                                                                System.out.println("Time to create Linked Lists: " + elapsedTime + "ms");
         try {
                                                                                 startingTime = System.currentTimeMillis();
             sortLinkedLists();
                                                                                 elapsedTime = (System.currentTimeMillis() - startingTime);
-                                                                                System.out.println("Time to sort Linked List: " + elapsedTime);
+                                                                                System.out.println("Time to sort Linked List: " + elapsedTime + "ms");
                                                                                 startingTime = System.currentTimeMillis();
            writeNewFile();
                                                                                 elapsedTime = (System.currentTimeMillis() - startingTime);
-                                                                                System.out.println("Filled new file in: " + elapsedTime);
+                                                                                System.out.println("Filled new file in: " + elapsedTime+ "ms");
 
             talkToConsole();
             }
@@ -37,14 +36,16 @@ public class Main {
             }
         }
 
-        public static int getPosition(String word, int indicator) {
+        public static int getPosition(String word, int indicator) { //1075ms;--- with list iterator = 180ms
+            ListIterator list_Iter = dict.get(indicator).listIterator(0);
+            int result =0;
+            while(list_Iter.hasNext()){
 
-        for(int j = 0; j < dict.get(indicator).size(); j++) {
-            String word_2 = (String) dict.get(indicator).get(j);
+            String word_2 = list_Iter.next().toString();
             if (word.compareTo(word_2) < 0){
-                return j;
+                return result;
             }
-
+            result++;
         }
         return -1;
     }
@@ -70,7 +71,7 @@ public class Main {
                     dict.get(indicator).add(position, word);
                 }
                 else {
-                    dict.get(indicator).add(word); // A MATHEUS LE GUSTAN LOS PENES
+                    dict.get(indicator).add(word);
                 }
             }
             sc.close();
@@ -91,16 +92,77 @@ public class Main {
             writer.close();
         }
 
-        public static void talkToConsole(){
+        public static void talkToConsole() throws FileNotFoundException {
             Scanner scan = new Scanner(System.in);
-            for (int j = 0;j<10;j++) {
-                int x = scan.nextInt();
-                if (toPrint[x]== null){
-                }else {
-                    System.out.println(toPrint[x]);
+            boolean flag = true;
+            boolean number = true;
+            int argument;
+            while (flag){
+                String arg = scan.nextLine();
 
+                try{
+                    argument = Integer.parseInt(arg);
+                    switch(argument) {
+                        case -1:
+                            checkIfCorrect();
+                            break;
+
+                        default:
+                            if(argument<-1){
+                                System.out.println("That number is too tiny");
+                                break;
+                            }else if (argument > toPrint.length){
+                                System.out.println("Number too big");
+                            }else {
+                                System.out.println(toPrint[argument]);
+                            }
+
+                    }
+                } catch (Exception e) {
+                    switch(arg) {
+                        case "test":
+                            checkIfCorrect();
+                            break;
+                        case "":
+                            System.out.println("This is not an input");
+                            break;
+                        default:
+                            char add = arg.toLowerCase().charAt(0);
+                            LinkedList list = dict.get(alphabet.indexOf(add));
+                            if(list.contains(arg)){
+                                System.out.println("This word is in the following position: " + getWord(arg));
+                            }
+                            else{
+                                System.out.println("word doesn't exist, try again");
+                            }
+                    }
                 }
             }
             scan.close();
         }
+
+    private static void checkIfCorrect() throws FileNotFoundException {
+        int errors = 0;
+        int i =0;
+        File sorted = new File(path_sorted);
+        Scanner access = new Scanner(sorted);
+        while(access.hasNextLine()){
+            if(access.nextLine() !=toPrint[i]){
+                errors++;
+            }
+            i++;
+        }
+        System.out.println("The sorted Arraylist is "+(errors/i*100)+"% accurate.");
+        access.close();
+    }
+
+    private static int getWord(String arg) {
+        for (int i = 0;i<toPrint.length;i++){
+            if (arg.toLowerCase().equals(toPrint[i].toLowerCase())){
+                return i;
+
+            }
+        }
+        return -1;
+    }
 }
